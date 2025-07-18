@@ -45,7 +45,7 @@ const userSchema = new mongoose.Schema({
       default: '20:00'
     }
   },
-  clerkId: {
+  userId: {
     type: String,
     unique: true,
     sparse: true

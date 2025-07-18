@@ -95,6 +95,9 @@ A comprehensive Node.js backend for an AI-powered mental health and wellness app
 - `GET /api/payment/status` - Get payment status
 - `GET /api/payment/history` - Get payment history
 
+### Onboarding (Emotional Context)
+- `POST /api/onboarding-step` - Submit onboarding emotional response (authenticated, Clerk). Payload: `{ "question": "Question text", "response": ["Selected", "Answers"] }`. Stores/updates user's emotional onboarding answers.
+
 ## Database Models
 
 ### User
@@ -122,6 +125,11 @@ A comprehensive Node.js backend for an AI-powered mental health and wellness app
 - Stripe transaction records
 - Subscription management
 - Payment history
+
+### EmotionalContext
+- Stores onboarding emotional responses per user (one document per user, identified by clerkId)
+- `clerkId`: Clerk user ID
+- `responses`: Array of `{ question: String, response: [String] }` pairs
 
 ## AI Integration
 

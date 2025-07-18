@@ -16,6 +16,7 @@ const moodRoutes = require('./routes/mood');
 const taskRoutes = require('./routes/task');
 const chatRoutes = require('./routes/chat');
 const paymentRoutes = require('./routes/payment');
+const onboardingRoutes = require('./routes/onboarding');
 
 // Import middleware
 const { errorHandler } = require('./middleware/errorHandler');
@@ -89,6 +90,7 @@ app.use('/api/mood', moodRoutes);
 app.use('/api/task', taskRoutes);
 app.use('/api/chat', chatRoutes);
 app.use('/api/payment', paymentRoutes);
+app.use('/api/onboarding', onboardingRoutes);
 
 // Example protected route
 app.get('/api/protected', ClerkExpressRequireAuth(), (req, res) => {

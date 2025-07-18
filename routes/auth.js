@@ -120,19 +120,19 @@ router.post('/sync-user', ClerkExpressRequireAuth(), async (req, res) => {
     }
 
     const userData = {
-      clerkId: clerkUser.id,
+      userId,
       email: clerkUser.emailAddresses[0].emailAddress,
       name,
     };
 
-    let user = await User.findOne({ clerkId: clerkUser.id });
+    let user = await User.findOne({ userId });
     if (!user) {
       // Try finding by email if not found by clerkId
       user = await User.findOne({ email: userData.email });
       if (user) {
         // Update user to add clerkId and update other fields
         let needsUpdate = false;
-        if (user.clerkId !== userData.clerkId) needsUpdate = true;
+        if (user.userId !== userData.userId) needsUpdate = true;
         if (user.name !== userData.name) needsUpdate = true;
         if (needsUpdate) {
           await User.updateOne({ email: userData.email }, userData);
@@ -153,7 +153,7 @@ router.post('/sync-user', ClerkExpressRequireAuth(), async (req, res) => {
       if (user.email !== userData.email) needsUpdate = true;
       if (user.name !== userData.name) needsUpdate = true;
       if (needsUpdate) {
-        await User.updateOne({ clerkId: clerkUser.id }, userData);
+        await User.updateOne({ userId }, userData);
       }
     }
 

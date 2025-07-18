@@ -1,0 +1,26 @@
+# Ignore node_modules and build artifacts
+ignore=node_modules/
+ignore=*.log
+ignore=*.tmp
+ignore=*.env
+ignore=*.local
+
+# Treat these as source code
+source=*.js
+source=*.json
+
+# Treat these as documentation
+doc=README.md
+
+# Treat these as configuration
+config=.gitignore
+config=package.json
+config=package-lock.json
+
+# Treat these as scripts
+script=scripts/*.js
+
+# Treat these as test files (if you add tests in the future)
+test=tests/**/*.js
+test=**/*.test.js
+test=**/__tests__/**/*.js
