@@ -17,8 +17,7 @@ const stepSchema = new mongoose.Schema({
 
 const taskSchema = new mongoose.Schema({
   userId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
+    type: String,
     required: true
   },
   date: {
@@ -61,6 +60,12 @@ const taskSchema = new mongoose.Schema({
   aiPrompt: {
     type: String,
     default: null
+  },
+  sessionId: {
+    type: String,
+    default: null,
+    required: true,
+    unique: true
   }
 }, {
   timestamps: true
@@ -73,7 +78,7 @@ taskSchema.index({ userId: 1, date: 1 }, { unique: true });
 taskSchema.methods.updateStatus = function() {
   const completedSteps = this.steps.filter(step => step.completed).length;
   const totalSteps = this.steps.length;
-  
+
   if (completedSteps === 0) {
     this.status = 'pending';
   } else if (completedSteps < totalSteps) {
@@ -82,7 +87,7 @@ taskSchema.methods.updateStatus = function() {
     this.status = 'completed';
     this.completedAt = new Date();
   }
-  
+
   return this.save();
 };
 
@@ -90,16 +95,16 @@ taskSchema.methods.updateStatus = function() {
 taskSchema.statics.getCompletionStats = async function(userId, days = 30) {
   const startDate = new Date();
   startDate.setDate(startDate.getDate() - days);
-  
+
   const tasks = await this.find({
     userId,
     date: { $gte: startDate }
   });
-  
+
   const completed = tasks.filter(task => task.status === 'completed').length;
   const inProgress = tasks.filter(task => task.status === 'in_progress').length;
   const pending = tasks.filter(task => task.status === 'pending').length;
-  
+
   return {
     total: tasks.length,
     completed,
