@@ -293,6 +293,64 @@ Respond with:
     }
   }
 
+  static async generateWeeklyInsights(moodData) {
+    // If OpenAI is not configured, return fallback insights
+    if (!openai) {
+      console.warn('[AIService.generateWeeklyInsights] OpenAI not configured');
+      return {
+        success: false,
+        error: 'AI chat is currently unavailable. Please configure your OpenAI API key to enable this feature.'
+      };
+    }
+
+    try {
+      const prompt = `Analyze this user's mood data and generate 3 personalized weekly insights. Focus on patterns, improvements, and actionable advice.
+
+Current Week Moods: ${JSON.stringify(moodData.currentWeek)}
+Previous Week Moods: ${JSON.stringify(moodData.previousWeek)}
+
+Generate insights that are:
+1. Positive and encouraging
+2. Based on actual mood patterns
+3. Actionable and specific
+4. Focus on emotional well-being and self-care
+
+Respond with a JSON object:
+{
+  "insights": [
+    "First insight about mood patterns or improvements",
+    "Second insight about specific days or routines",
+    "Third insight with actionable advice"
+  ]
+}`;
+
+      const response = await openai.chat.completions.create({
+        model: 'gpt-3.5-turbo',
+        messages: [
+          {
+            role: 'system',
+            content: 'You are a mental health assistant that provides personalized, encouraging insights based on mood data. Always respond with valid JSON.'
+          },
+          {
+            role: 'user',
+            content: prompt
+          }
+        ],
+        max_tokens: 300,
+        temperature: 0.7,
+      });
+
+      const insightsData = JSON.parse(response.choices[0].message.content);
+      return insightsData;
+    } catch (error) {
+      console.error('[AIService.generateWeeklyInsights] Chat AI Error:', error);
+      return {
+        success: false,
+        error: 'Unable to generate weekly insights at this time. Please try again later.'
+      };
+    }
+  }
+
   static _getFallbackTask(userMood) {
     const fallbackTasks = {
       'very_sad': {
