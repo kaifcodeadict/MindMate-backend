@@ -6,17 +6,18 @@ const AIService = require('../services/aiService');
 const { v4: uuidv4 } = require('uuid');
 const router = express.Router();
 const { ClerkExpressRequireAuth } = require('@clerk/clerk-sdk-node');
+const Task = require('../models/Task');
 
 // Send message to AI assistant
-router.post('/send',  aiLimiter, async (req, res) => {
+router.post('/send',  ClerkExpressRequireAuth(), aiLimiter, async (req, res) => {
   try {
     console.log("on chat send");
-    // const { userId } = req.auth;
+    const { userId } = req.auth;
     console.log("on chat send message is required");
-    const  userId  = "user_2zzJSn1Ym2XGuLyIIED7yRkWIWy"
-    // const { message, sessionId } = req.body;
-    const  sessionId  = "3445e8d4-1269-4c85-a4ee-2b1eeec5dbd6"
-    const { message } = req.body;
+    // const  userId  = "user_2zzJSn1Ym2XGuLyIIED7yRkWIWy"
+    const { message, sessionId } = req.body;
+    // const  sessionId  = "3445e8d4-1269-4c85-a4ee-2b1eeec5dbd6"
+    // const { message } = req.body;
 
     if (!message || !message.trim()) {
       return res.status(400).json({
@@ -95,7 +96,6 @@ router.post('/send',  aiLimiter, async (req, res) => {
     // Save or update Task if generateTask is true
     let savedTask = null;
     if (aiResponse.data.generateTask && aiResponse.data.task && aiResponse.data.task.success) {
-      const Task = require('../models/Task');
       const taskData = aiResponse.data.task.data;
       // Try to find existing task by sessionId
       let existingTask = await Task.findOne({ sessionId: chatSessionId });
@@ -135,7 +135,7 @@ router.post('/send',  aiLimiter, async (req, res) => {
         sessionId: chatSessionId,
         response: chat.messages,
         generateTask: aiResponse.data.generateTask,
-        task: aiResponse.data.task,
+        task: savedTask,
         moodDetected: chat.moodDetected,
         sentiment: chat.sentiment
       }
@@ -150,11 +150,13 @@ router.post('/send',  aiLimiter, async (req, res) => {
 });
 
 // Get chat history
-router.get('/history', ClerkExpressRequireAuth(), premiumMiddleware, async (req, res) => {
+router.get('/history',   async (req, res) => {
   try {
     const { sessionId, limit = 10 } = req.query;
+    // const { userId } = req.auth;
+    const  userId  = "user_2zzJSn1Ym2XGuLyIIED7yRkWIWy";
 
-    let query = { userId: req.user._id };
+    let query = { userId: userId };
     if (sessionId) {
       query.sessionId = sessionId;
     }
@@ -163,9 +165,20 @@ router.get('/history', ClerkExpressRequireAuth(), premiumMiddleware, async (req,
       .sort({ updatedAt: -1 })
       .limit(parseInt(limit));
 
+    // For each chat, find the related Task and add it to the response
+    const chatsWithTasks = await Promise.all(
+      chats.map(async (chat) => {
+        const task = await Task.findOne({ sessionId: chat.sessionId, userId: chat.userId });
+        // Convert chat to object and add task
+        const chatObj = chat.toObject();
+        chatObj.task = task?.status || null;
+        return chatObj;
+      })
+    );
+
     res.json({
       success: true,
-      data: chats
+      data: chatsWithTasks
     });
   } catch (error) {
     res.status(500).json({
@@ -176,12 +189,12 @@ router.get('/history', ClerkExpressRequireAuth(), premiumMiddleware, async (req,
 });
 
 // Get specific chat session
-router.get('/session/:sessionId', ClerkExpressRequireAuth(), premiumMiddleware, async (req, res) => {
+router.get('/session/:sessionId', ClerkExpressRequireAuth(), async (req, res) => {
   try {
     const { sessionId } = req.params;
-
+    const { userId } = req.auth;
     const chat = await Chat.findOne({
-      userId: req.user._id,
+      userId: userId,
       sessionId
     });
 

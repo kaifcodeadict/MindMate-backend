@@ -5,7 +5,7 @@ const Task = require('../models/Task');
 const Mood = require('../models/Mood');
 const AIService = require('../services/aiService');
 const router = express.Router();
-
+const { ClerkExpressRequireAuth } = require('@clerk/clerk-sdk-node');
 // Generate or get daily task
 router.post('/daily', authMiddleware, aiLimiter, async (req, res) => {
   try {
@@ -83,15 +83,15 @@ router.post('/daily', authMiddleware, aiLimiter, async (req, res) => {
 });
 
 // Get task for specific date
-router.get('/:date', authMiddleware, async (req, res) => {
+router.get('/:sessionId', ClerkExpressRequireAuth(),  async (req, res) => {
   try {
-    const { date } = req.params;
-    const taskDate = new Date(date);
-    taskDate.setHours(0, 0, 0, 0);
+    const { sessionId } = req.params;
+    const { userId } = req.auth;
+
 
     const task = await Task.findOne({
-      userId: req.user._id,
-      date: { $gte: taskDate, $lt: new Date(taskDate.getTime() + 24 * 60 * 60 * 1000) }
+      userId: userId,
+      sessionId: sessionId
     });
 
     res.json({
@@ -151,13 +151,15 @@ router.patch('/step/:stepId', authMiddleware, async (req, res) => {
 });
 
 // Mark task as complete
-router.patch('/:taskId/complete', authMiddleware, async (req, res) => {
+router.patch('/:taskId/complete', ClerkExpressRequireAuth(), async (req, res) => {
   try {
-    const { taskId } = req.params;
+    const { taskId, sessionId } = req.params;
+    const { userId } = req.auth;
 
     const task = await Task.findOne({
       _id: taskId,
-      userId: req.user._id
+      userId: userId,
+      // sessionId: sessionId
     });
 
     if (!task) {
