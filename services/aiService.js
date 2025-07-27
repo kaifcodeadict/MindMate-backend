@@ -91,7 +91,7 @@ Respond with a JSON object in this format:
 `;
 
       const response = await openai.chat.completions.create({
-        model: 'gpt-3.5-turbo',
+        model: 'mistralai/mistral-7b-instruct:free',
         messages: [
           {
             role: 'system',
@@ -147,7 +147,7 @@ Respond with a JSON object in this format:
           // Summarize conversation for userNotes
           const conversationSummaryPrompt = `Summarize the user's main concerns and emotional state from this conversation in 1-2 sentences, focusing on what might help them most right now.\n\nConversation:\n${messages.map(m => m.role + ': ' + m.content).join('\n')}`;
           const summaryResponse = await openai.chat.completions.create({
-            model: 'gpt-3.5-turbo',
+            model: 'mistralai/mistral-7b-instruct:free',
             messages: [
               { role: 'system', content: 'You are a mental health assistant. Always respond with a concise summary.' },
               { role: 'user', content: conversationSummaryPrompt }
@@ -202,7 +202,7 @@ ${userMood ? `Current user mood: ${userMood}` : ''}`;
       ]);
 
       const response = await openai.chat.completions.create({
-        model: 'gpt-3.5-turbo',
+        model: 'mistralai/mistral-7b-instruct:free',
         messages: [
           {
             role: 'system',
@@ -259,7 +259,7 @@ Respond with:
 }`;
 
       const response = await openai.chat.completions.create({
-        model: 'gpt-3.5-turbo',
+        model: 'mistralai/mistral-7b-instruct:free',
         messages: [
           {
             role: 'system',
@@ -325,7 +325,7 @@ Respond with a JSON object:
 }`;
 
       const response = await openai.chat.completions.create({
-        model: 'gpt-3.5-turbo',
+        model: 'mistralai/mistral-7b-instruct:free',
         messages: [
           {
             role: 'system',

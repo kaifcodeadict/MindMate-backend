@@ -5,6 +5,7 @@ const Chat = require('../models/Chat');
 const Task = require('../models/Task');
 const router = express.Router();
 const AIService = require('../services/aiService');
+const { ClerkExpressRequireAuth } = require('@clerk/clerk-sdk-node');
 
 // Submit mood check-in
 router.post('/check-in', authMiddleware, async (req, res) => {
@@ -425,9 +426,9 @@ async function getWeeklyInsights(userId) {
 }
 
 // Get mood analytics
-router.get('/analytics',  async (req, res) => {
+router.get('/analytics', ClerkExpressRequireAuth() , async (req, res) => {
   try {
-    const userId = "user_2zzJSn1Ym2XGuLyIIED7yRkWIWy";
+    const { userId } = req.auth;
     // Run analytics in parallel
     const [taskStreak, moodCheckIns, weeklyGoal, todaysTask, moodJourney, commonMood, stabilityScore, weeklyInsights] = await Promise.all([
       getTaskStreak(userId),
