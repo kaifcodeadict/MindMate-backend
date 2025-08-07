@@ -36,15 +36,34 @@ A comprehensive Node.js backend for an AI-powered mental health and wellness app
 
 3. **Required Environment Variables**
    ```
-   MONGODB_URI=mongodb://localhost:27017/mental-health-app
-   JWT_SECRET=your-jwt-secret
-   GOOGLE_CLIENT_ID=your-google-client-id
-   GOOGLE_CLIENT_SECRET=your-google-client-secret
-   SESSION_SECRET=your-session-secret
-   OPENAI_API_KEY=your-openai-api-key
-   STRIPE_SECRET_KEY=your-stripe-secret-key
-   STRIPE_WEBHOOK_SECRET=your-stripe-webhook-secret
-   FRONTEND_URL=http://localhost:5173
+# Database
+MONGODB_URI= URL
+
+
+# Server
+PORT=PORT
+NODE_ENV=development
+
+
+
+# OpenAI
+OPENROUTER_API_KEY=open-router-api
+
+
+
+
+
+# Frontend URL
+FRONTEND_URL=frontend-url-for-cros
+
+# Clerk (if using Clerk for authentication)
+
+  CLERK_PUBLISHABLE_KEY=clerk-key
+  CLERK_SECRET_KEY=clerk-secret-key
+
+RAZORPAY_KEY_ID=razorpay-id
+RAZORPAY_KEY_SECRET=razorpay-key
+
    ```
 
 4. **Database Setup**
@@ -58,29 +77,28 @@ A comprehensive Node.js backend for an AI-powered mental health and wellness app
 
 ## API Endpoints
 
-### Authentication
-- `GET /api/auth/google` - Start Google OAuth
-- `GET /api/auth/google/callback` - OAuth callback
-- `GET /api/auth/me` - Get current user
+### Authentication (Clerk)
+- `POST /api/auth/sync-user` - Sync user data with Clerk
+- `GET /api/auth/me` - Get current user (legacy)
 - `PATCH /api/auth/preferences` - Update user preferences
 - `POST /api/auth/logout` - Logout user
 
 ### Mood Tracking
-- `POST /api/mood/check-in` - Submit daily mood
+- `POST /api/mood/check-in` - Submit daily mood check-in
 - `GET /api/mood/today` - Get today's mood
-- `GET /api/mood/history` - Get mood history
-- `GET /api/mood/analytics` - Get mood analytics
+- `GET /api/mood/history` - Get mood history (days parameter)
+- `GET /api/mood/analytics` - Get comprehensive mood analytics
 
 ### Task Management
 - `POST /api/task/daily` - Generate daily task
-- `GET /api/task/:date` - Get task for date
+- `GET /api/task/:date` - Get task for specific date
 - `PATCH /api/task/step/:stepId` - Update step completion
 - `PATCH /api/task/:taskId/complete` - Mark task complete
 - `GET /api/task/calendar/:year/:month` - Get calendar data
 - `GET /api/task/stats/overview` - Get task statistics
 
 ### AI Chat (Premium)
-- `POST /api/chat/send` - Send message to AI
+- `POST /api/chat/send` - Send message to AI assistant
 - `GET /api/chat/history` - Get chat history
 - `GET /api/chat/session/:sessionId` - Get specific session
 - `DELETE /api/chat/session/:sessionId` - Delete session
@@ -93,13 +111,14 @@ A comprehensive Node.js backend for an AI-powered mental health and wellness app
 - `GET /api/payment/history` - Get payment history
 
 ### Onboarding (Emotional Context)
-- `POST /api/onboarding-step` - Submit onboarding emotional response (authenticated, Clerk). Payload: `{ "question": "Question text", "response": ["Selected", "Answers"] }`. Stores/updates user's emotional onboarding answers.
+- `POST /api/onboarding` - Submit onboarding emotional response (Clerk authenticated)
+  - Payload: `{ "question": "Question text", "response": ["Selected", "Answers"] }`
+  - Stores/updates user's emotional onboarding answers
 
 ## Database Models
 
 ### User
 - Google OAuth profile info
-- Premium subscription status
 - Streak tracking
 - User preferences
 
@@ -118,10 +137,6 @@ A comprehensive Node.js backend for an AI-powered mental health and wellness app
 - Mood detection from messages
 - Session management
 
-### Payment
-- Stripe transaction records
-- Subscription management
-- Payment history
 
 ### EmotionalContext
 - Stores onboarding emotional responses per user (one document per user, identified by clerkId)
