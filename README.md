@@ -6,9 +6,6 @@ A comprehensive Node.js backend for an AI-powered mental health and wellness app
 
 - **User Authentication**: Google OAuth integration with session management
 - **Mood Tracking**: Daily mood check-ins with analytics and history
-- **AI-Powered Tasks**: Personalized daily tasks generated based on mood
-- **Premium Chat**: AI assistant for mental health support (premium feature)
-- **Stripe Integration**: Subscription management for premium features
 - **Analytics**: Mood trends, task completion stats, and insights
 - **Rate Limiting**: Protection against API abuse
 - **Security**: Helmet.js, CORS, and input validation
@@ -18,9 +15,9 @@ A comprehensive Node.js backend for an AI-powered mental health and wellness app
 - **Runtime**: Node.js
 - **Framework**: Express.js
 - **Database**: MongoDB with Mongoose ODM
-- **Authentication**: Passport.js (Google OAuth)
-- **Payments**: Stripe
-- **AI**: OpenAI GPT-3.5 Turbo
+- **Authentication**: Clerk
+- **Payments**: Razor Pay
+- **AI**: Openrouter mistralai/mistral-7b-instruct:free
 - **Security**: Helmet, CORS, Rate Limiting
 
 ## Installation
