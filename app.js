@@ -30,6 +30,7 @@ app.use(helmet());
 // CORS configuration
 const allowedOrigins = [
   process.env.FRONTEND_URL,
+  'https://mindmate-lime.vercel.app',
   'http://localhost:8080',
   'http://localhost:5173'
 ].filter(Boolean);
